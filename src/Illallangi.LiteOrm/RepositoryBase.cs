@@ -10,15 +10,17 @@ namespace Illallangi.LiteOrm
 
         protected RepositoryBase(
                 string databasePath, 
-                string connectionString, 
-                IEnumerable<string> sqlSchema, 
+                string connectionString,
+                IEnumerable<string> sqlSchemaLines = null,
+                IEnumerable<string> sqlSchemaFiles = null,
                 IEnumerable<string> pragmas = null, 
                 IEnumerable<string> extensions = null, 
                 ILog log = null)
             : base(
                 databasePath, 
-                connectionString, 
-                sqlSchema, 
+                connectionString,
+                sqlSchemaLines,
+                sqlSchemaFiles,
                 pragmas, 
                 extensions, 
                 log)

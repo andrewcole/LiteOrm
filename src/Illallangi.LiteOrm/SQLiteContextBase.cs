@@ -17,14 +17,17 @@ namespace Illallangi.LiteOrm
 
         private readonly string currentConnectionString;
 
-        private readonly IEnumerable<string> currentSqlSchema;
-        
+        private readonly IEnumerable<string> currentSqlSchemaLines;
+
+        private readonly IEnumerable<string> currentSqlSchemaFiles;
+
         private readonly IEnumerable<string> currentPragmas;
 
         private readonly IEnumerable<string> currentExtensions;
 
         private readonly ILog currentLog;
 
+        private IEnumerable<string> currentSqlSchema; 
         #endregion
 
         #region Constructor
@@ -32,23 +35,26 @@ namespace Illallangi.LiteOrm
         protected SQLiteContextBase(
                 string databasePath,
                 string connectionString,
-                IEnumerable<string> sqlSchema,
+                IEnumerable<string> sqlSchemaLines = null,
+                IEnumerable<string> sqlSchemaFiles = null,
                 IEnumerable<string> pragmas = null,
                 IEnumerable<string> extensions = null,
                 ILog log = null)
         {
             this.currentDatabasePath = databasePath;
             this.currentConnectionString = connectionString;
-            this.currentSqlSchema = sqlSchema;
-            this.currentPragmas = pragmas;
-            this.currentExtensions = extensions;
+            this.currentSqlSchemaLines = sqlSchemaLines ?? new List<string>();
+            this.currentSqlSchemaFiles = sqlSchemaFiles ?? new List<string>();
+            this.currentPragmas = pragmas ?? new List<string>();
+            this.currentExtensions = extensions ?? new List<string>();
             this.currentLog = log ?? new NoOpLogger();
 
             this.Log.DebugFormat(
-                    @"SQLiteContextBase(databasePath=""{0}"", connectionString=""{1}"", sqlSchema=""{2}"", pragmas=""{3}"", extensions=""{4}"", log = ""{5}"")",
+                    @"SQLiteContextBase(databasePath=""{0}"", connectionString=""{1}"", sqlSchemaLines=""{2}"", sqlSchemaFiles=""{3}"", pragmas=""{4}"", extensions=""{5}"", log = ""{6}"")",
                     this.DatabasePath,
                     this.ConnectionString,
-                    this.SqlSchema,
+                    this.SqlSchemaLines,
+                    this.SqlSchemaFiles,
                     this.Pragmas,
                     this.Extensions,
                     this.Log);
@@ -82,11 +88,19 @@ namespace Illallangi.LiteOrm
             }
         }
 
-        private IEnumerable<string> SqlSchema
+        private IEnumerable<string> SqlSchemaLines
         {
             get
             {
-                return this.currentSqlSchema;
+                return this.currentSqlSchemaLines;
+            }
+        }
+
+        private IEnumerable<string> SqlSchemaFiles
+        {
+            get
+            {
+                return this.currentSqlSchemaFiles;
             }
         }
 
@@ -106,6 +120,14 @@ namespace Illallangi.LiteOrm
             }
         }
 
+        private IEnumerable<string> SqlSchema
+        {
+            get
+            {
+                return this.currentSqlSchema ?? (this.currentSqlSchema = this.GetSqlSchema());
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -122,12 +144,7 @@ namespace Illallangi.LiteOrm
                     .SetAllPragmas(this.Pragmas)
                     .WithLogger(this.Log))
                 {
-                    foreach (
-                        var line in
-                            this.SqlSchema
-                                .Select(f => Path.GetFullPath(Environment.ExpandEnvironmentVariables(f)))
-                                .Where(File.Exists)
-                                .SelectMany(file => File.ReadAllText(file).Split(';')))
+                    foreach (var line in this.SqlSchema)
                     {
                         new SQLiteCommand(line, conn).ExecuteNonQuery();
                     }
@@ -164,6 +181,15 @@ namespace Illallangi.LiteOrm
         private string GetConnectionString()
         {
             return string.Format(this.ConnectionString, this.GetDbPath());
+        }
+
+        private IEnumerable<string> GetSqlSchema()
+        {
+            return
+                this.SqlSchemaFiles.Select(f => Path.GetFullPath(Environment.ExpandEnvironmentVariables(f)))
+                    .Where(File.Exists)
+                    .SelectMany(file => File.ReadAllText(file).Split(';'))
+                    .Concat(this.SqlSchemaLines);
         }
 
         #endregion
