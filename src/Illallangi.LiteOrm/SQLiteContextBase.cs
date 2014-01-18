@@ -34,7 +34,7 @@ namespace Illallangi.LiteOrm
 
         protected SQLiteContextBase(
                 string databasePath,
-                string connectionString,
+                string connectionString = null,
                 IEnumerable<string> sqlSchemaLines = null,
                 IEnumerable<string> sqlSchemaFiles = null,
                 IEnumerable<string> pragmas = null,
@@ -42,7 +42,7 @@ namespace Illallangi.LiteOrm
                 ILog log = null)
         {
             this.currentDatabasePath = databasePath;
-            this.currentConnectionString = connectionString;
+            this.currentConnectionString = connectionString ?? @"data source=""{0}""";
             this.currentSqlSchemaLines = sqlSchemaLines ?? new List<string>();
             this.currentSqlSchemaFiles = sqlSchemaFiles ?? new List<string>();
             this.currentPragmas = pragmas ?? new List<string>();

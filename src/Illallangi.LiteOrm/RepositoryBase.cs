@@ -9,12 +9,12 @@ namespace Illallangi.LiteOrm
         #region Constructor
 
         protected RepositoryBase(
-                string databasePath, 
-                string connectionString,
+                string databasePath,
+                string connectionString = null,
                 IEnumerable<string> sqlSchemaLines = null,
                 IEnumerable<string> sqlSchemaFiles = null,
-                IEnumerable<string> pragmas = null, 
-                IEnumerable<string> extensions = null, 
+                IEnumerable<string> pragmas = null,
+                IEnumerable<string> extensions = null,
                 ILog log = null)
             : base(
                 databasePath, 
