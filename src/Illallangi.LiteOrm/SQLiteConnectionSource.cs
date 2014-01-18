@@ -42,6 +42,15 @@ namespace Illallangi.LiteOrm
             this.currentDatabasePath = databasePath;
             this.currentConnectionString = connectionString;
             this.currentLog = log ?? new NoOpLogger();
+
+            this.Log.DebugFormat(
+                    @"SQLiteConnectionSource(pragmas=""{0}"", extensions=""{1}"", sqlSchema=""{2}"", databasePath=""{3}"", connectionString=""{4}"", log = ""{5}"")",
+                    this.Pragmas,
+                    this.Extensions,
+                    this.SqlSchema,
+                    this.DatabasePath,
+                    this.ConnectionString,
+                    this.Log);
         }
 
         #endregion
@@ -99,7 +108,7 @@ namespace Illallangi.LiteOrm
         #endregion
 
         #region Methods
-        
+
         #region Public Methods
 
         public SQLiteConnection GetConnection()
@@ -132,7 +141,7 @@ namespace Illallangi.LiteOrm
         }
 
         #endregion
-        
+
         #region Private Methods
 
         private string GetDbPath()
