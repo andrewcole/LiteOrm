@@ -165,10 +165,10 @@ namespace Illallangi.LiteOrm
         private string GetDbPath()
         {
             var path = Path.GetFullPath(Environment.ExpandEnvironmentVariables(this.DatabasePath));
-            Debug.Assert(null != path, "null == Path.GetFullPath(SQLiteContextBase.DatabasePath)");
+            Debug.Assert(null != path, "null != Path.GetFullPath(SQLiteContextBase.DatabasePath)");
 
             var dir = Path.GetDirectoryName(path);
-            Debug.Assert(null != dir, "null == Path.GetDirectoryName(Path.GetFullPath(SQLiteContextBase.DatabasePath))");
+            Debug.Assert(null != dir, "null != Path.GetDirectoryName(Path.GetFullPath(SQLiteContextBase.DatabasePath))");
 
             if (!Directory.Exists(dir))
             {
