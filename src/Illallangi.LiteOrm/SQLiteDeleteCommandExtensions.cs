@@ -46,5 +46,10 @@ namespace Illallangi.LiteOrm
 
             return cm;
         }
+
+        public static void Go(this SQLiteDeleteCommand delete)
+        {
+            delete.CreateCommand().ExecuteNonQuery();
+        }
     }
 }
