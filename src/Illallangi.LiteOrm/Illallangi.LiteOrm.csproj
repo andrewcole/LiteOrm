@@ -48,6 +48,7 @@
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="SQLiteConnectionExtensions.cs" />
     <Compile Include="SQLiteContextBase.cs" />
+    <Compile Include="SQLiteContextBaseExtensions.cs" />
     <Compile Include="SQLiteDeleteCommand.cs" />
     <Compile Include="SQLiteDeleteCommandExtensions.cs" />
     <Compile Include="SQLiteInsertCommand.cs" />

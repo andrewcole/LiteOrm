@@ -58,13 +58,15 @@ namespace Illallangi.LiteOrm
                     this.Pragmas,
                     this.Extensions,
                     this.Log);
+
+            this.SetupSQLiteInterop();
         }
 
         #endregion
 
         #region Properties
 
-        protected ILog Log
+        public ILog Log
         {
             get
             {
