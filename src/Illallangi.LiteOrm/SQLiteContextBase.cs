@@ -48,7 +48,7 @@ namespace Illallangi.LiteOrm
             this.currentPragmas = pragmas ?? new List<string>();
             this.currentExtensions = extensions ?? new List<string>();
             this.currentLog = log ?? new NoOpLogger();
-
+            
             this.Log.DebugFormat(
                     @"SQLiteContextBase(databasePath=""{0}"", connectionString=""{1}"", sqlSchemaLines=""{2}"", sqlSchemaFiles=""{3}"", pragmas=""{4}"", extensions=""{5}"", log = ""{6}"")",
                     this.DatabasePath,
@@ -132,7 +132,7 @@ namespace Illallangi.LiteOrm
 
         #region Methods
 
-        #region Public Methods
+        #region Protected Methods
 
         protected SQLiteConnection GetConnection()
         {
@@ -165,10 +165,10 @@ namespace Illallangi.LiteOrm
         private string GetDbPath()
         {
             var path = Path.GetFullPath(Environment.ExpandEnvironmentVariables(this.DatabasePath));
-            Debug.Assert(null != path, "null == Path.GetFullPath(SQLiteConnectionSource.DatabasePath)");
+            Debug.Assert(null != path, "null == Path.GetFullPath(SQLiteContextBase.DatabasePath)");
 
             var dir = Path.GetDirectoryName(path);
-            Debug.Assert(null != dir, "null == Path.GetDirectoryName(Path.GetFullPath(SQLiteConnectionSource.DatabasePath))");
+            Debug.Assert(null != dir, "null == Path.GetDirectoryName(Path.GetFullPath(SQLiteContextBase.DatabasePath))");
 
             if (!Directory.Exists(dir))
             {
