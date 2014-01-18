@@ -29,8 +29,8 @@ namespace Illallangi.LiteOrm
 
         #region Constructors
 
-        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, string databasePath, string connectionString, ILog log)
-            : this(liteOrmConfig.Pragmas, liteOrmConfig.Extensions, liteOrmConfig.SqlSchema, databasePath, connectionString, log)
+        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log)
+            : this(liteOrmConfig.Pragmas, liteOrmConfig.Extensions, liteOrmConfig.SqlSchema, liteOrmConfig.DbPath, liteOrmConfig.ConnectionString, log)
         {
         }
 
