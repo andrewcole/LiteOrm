@@ -47,7 +47,8 @@ namespace Illallangi.LiteOrm
         {
             if (log.IsDebugEnabled)
             {
-                cx.Trace += (o, a) => log.DebugFormat(@"Executing ""{0}""", a.Statement);
+                cx.Trace += (o, a) => log.DebugFormat(@"SQLiteConnection executing ""{0}""", a.Statement);
+                cx.Disposed += (o, a) => log.DebugFormat(@"SQLiteConnection disposing");
             }
             return cx;
         }
