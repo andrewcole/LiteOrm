@@ -3,7 +3,7 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Ninject.Extensions.Logging;
+using Common.Logging;
 
 namespace Illallangi.LiteOrm
 {
@@ -12,16 +12,16 @@ namespace Illallangi.LiteOrm
         #region Fields
 
         private readonly ILiteOrmConfig currentLiteOrmConfig;
-        private readonly ILogger currentLogger;
+        private readonly ILog currentLog;
 
         #endregion
 
         #region Constructors
 
-        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILogger logger)
+        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log)
         {
             this.currentLiteOrmConfig = liteOrmConfig;
-            this.currentLogger = logger;
+            this.currentLog = log;
         }
 
         #endregion
@@ -36,9 +36,9 @@ namespace Illallangi.LiteOrm
             }
         }
 
-        private ILogger Logger
+        private ILog Log
         {
-            get { return this.currentLogger; }
+            get { return this.currentLog; }
         }
 
         #endregion
@@ -55,7 +55,7 @@ namespace Illallangi.LiteOrm
                     .OpenAndReturn()
                     .LoadAllExtensions(this.LiteOrmConfig.Extensions)
                     .SetAllPragmas(this.LiteOrmConfig.Pragmas)
-                    .WithLogger(this.Logger))
+                    .WithLogger(this.Log))
                 {
                     foreach (
                         var line in
@@ -74,7 +74,7 @@ namespace Illallangi.LiteOrm
                 .OpenAndReturn()
                 .LoadAllExtensions(this.LiteOrmConfig.Extensions)
                 .SetAllPragmas(this.LiteOrmConfig.Pragmas)
-                .WithLogger(this.Logger);
+                .WithLogger(this.Log);
         }
 
         #endregion
