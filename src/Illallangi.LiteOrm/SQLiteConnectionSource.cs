@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Common.Logging;
+using Common.Logging.Simple;
 
 namespace Illallangi.LiteOrm
 {
-    using System.Collections.Generic;
-
     public sealed class SQLiteConnectionSource : IConnectionSource
     {
         #region Fields
@@ -29,19 +29,19 @@ namespace Illallangi.LiteOrm
 
         #region Constructors
 
-        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log)
+        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log = null)
             : this(liteOrmConfig.Pragmas, liteOrmConfig.Extensions, liteOrmConfig.SqlSchema, liteOrmConfig.DbPath, liteOrmConfig.ConnectionString, log)
         {
         }
 
-        public SQLiteConnectionSource(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log)
+        public SQLiteConnectionSource(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log = null)
         {
             this.currentPragmas = pragmas;
             this.currentExtensions = extensions;
             this.currentSqlSchema = sqlSchema;
             this.currentDatabasePath = databasePath;
-            this.currentConnectionString = connectionString; 
-            this.currentLog = log;
+            this.currentConnectionString = connectionString;
+            this.currentLog = log ?? new NoOpLogger();
         }
 
         #endregion
