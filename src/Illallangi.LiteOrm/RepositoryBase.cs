@@ -6,12 +6,28 @@ namespace Illallangi.LiteOrm
 {
     public abstract class RepositoryBase<T> : SQLiteContextBase, IRepository<T> where T : class
     {
-        #region Methods
+        #region Constructor
 
-        protected RepositoryBase(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log = null)
-            : base(pragmas, extensions, sqlSchema, databasePath, connectionString, log)
+        protected RepositoryBase(
+                string databasePath, 
+                string connectionString, 
+                IEnumerable<string> sqlSchema, 
+                IEnumerable<string> pragmas = null, 
+                IEnumerable<string> extensions = null, 
+                ILog log = null)
+            : base(
+                databasePath, 
+                connectionString, 
+                sqlSchema, 
+                pragmas, 
+                extensions, 
+                log)
         {
         }
+
+        #endregion
+
+        #region Methods
 
         public abstract T Create(T obj);
 

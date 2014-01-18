@@ -13,38 +13,44 @@ namespace Illallangi.LiteOrm
     {
         #region Fields
 
-        private readonly ILog currentLog;
-
-        private readonly IEnumerable<string> currentPragmas;
-
-        private readonly IEnumerable<string> currentExtensions;
-
-        private readonly IEnumerable<string> currentSqlSchema;
-
         private readonly string currentDatabasePath;
 
         private readonly string currentConnectionString;
 
+        private readonly IEnumerable<string> currentSqlSchema;
+        
+        private readonly IEnumerable<string> currentPragmas;
+
+        private readonly IEnumerable<string> currentExtensions;
+
+        private readonly ILog currentLog;
+
         #endregion
 
-        #region Constructors
+        #region Constructor
 
-        protected SQLiteContextBase(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log = null)
+        protected SQLiteContextBase(
+                string databasePath,
+                string connectionString,
+                IEnumerable<string> sqlSchema,
+                IEnumerable<string> pragmas = null,
+                IEnumerable<string> extensions = null,
+                ILog log = null)
         {
-            this.currentPragmas = pragmas;
-            this.currentExtensions = extensions;
-            this.currentSqlSchema = sqlSchema;
             this.currentDatabasePath = databasePath;
             this.currentConnectionString = connectionString;
+            this.currentSqlSchema = sqlSchema;
+            this.currentPragmas = pragmas;
+            this.currentExtensions = extensions;
             this.currentLog = log ?? new NoOpLogger();
 
             this.Log.DebugFormat(
-                    @"SQLiteConnectionSource(pragmas=""{0}"", extensions=""{1}"", sqlSchema=""{2}"", databasePath=""{3}"", connectionString=""{4}"", log = ""{5}"")",
-                    this.Pragmas,
-                    this.Extensions,
-                    this.SqlSchema,
+                    @"SQLiteContextBase(databasePath=""{0}"", connectionString=""{1}"", sqlSchema=""{2}"", pragmas=""{3}"", extensions=""{4}"", log = ""{5}"")",
                     this.DatabasePath,
                     this.ConnectionString,
+                    this.SqlSchema,
+                    this.Pragmas,
+                    this.Extensions,
                     this.Log);
         }
 
