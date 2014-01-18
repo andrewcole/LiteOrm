@@ -9,7 +9,7 @@ using Common.Logging.Simple;
 
 namespace Illallangi.LiteOrm
 {
-    public sealed class SQLiteConnectionSource : IConnectionSource
+    public abstract class SQLiteContextBase
     {
         #region Fields
 
@@ -29,12 +29,7 @@ namespace Illallangi.LiteOrm
 
         #region Constructors
 
-        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log = null)
-            : this(liteOrmConfig.Pragmas, liteOrmConfig.Extensions, liteOrmConfig.SqlSchema, liteOrmConfig.DbPath, liteOrmConfig.ConnectionString, log)
-        {
-        }
-
-        public SQLiteConnectionSource(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log = null)
+        protected SQLiteContextBase(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log = null)
         {
             this.currentPragmas = pragmas;
             this.currentExtensions = extensions;
@@ -57,7 +52,7 @@ namespace Illallangi.LiteOrm
 
         #region Properties
 
-        private ILog Log
+        protected ILog Log
         {
             get
             {
@@ -111,7 +106,7 @@ namespace Illallangi.LiteOrm
 
         #region Public Methods
 
-        public SQLiteConnection GetConnection()
+        protected SQLiteConnection GetConnection()
         {
             if (!File.Exists(this.GetDbPath()))
             {
