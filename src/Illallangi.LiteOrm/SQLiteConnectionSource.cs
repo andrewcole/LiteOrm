@@ -7,20 +7,40 @@ using Common.Logging;
 
 namespace Illallangi.LiteOrm
 {
+    using System.Collections.Generic;
+
     public sealed class SQLiteConnectionSource : IConnectionSource
     {
         #region Fields
 
-        private readonly ILiteOrmConfig currentLiteOrmConfig;
         private readonly ILog currentLog;
+
+        private readonly IEnumerable<string> currentPragmas;
+
+        private readonly IEnumerable<string> currentExtensions;
+
+        private readonly IEnumerable<string> currentSqlSchema;
+
+        private readonly string currentDatabasePath;
+
+        private readonly string currentConnectionString;
 
         #endregion
 
         #region Constructors
 
-        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, ILog log)
+        public SQLiteConnectionSource(ILiteOrmConfig liteOrmConfig, string databasePath, string connectionString, ILog log)
+            : this(liteOrmConfig.Pragmas, liteOrmConfig.Extensions, liteOrmConfig.SqlSchema, databasePath, connectionString, log)
         {
-            this.currentLiteOrmConfig = liteOrmConfig;
+        }
+
+        public SQLiteConnectionSource(IEnumerable<string> pragmas, IEnumerable<string> extensions, IEnumerable<string> sqlSchema, string databasePath, string connectionString, ILog log)
+        {
+            this.currentPragmas = pragmas;
+            this.currentExtensions = extensions;
+            this.currentSqlSchema = sqlSchema;
+            this.currentDatabasePath = databasePath;
+            this.currentConnectionString = connectionString; 
             this.currentLog = log;
         }
 
@@ -28,17 +48,52 @@ namespace Illallangi.LiteOrm
 
         #region Properties
 
-        private ILiteOrmConfig LiteOrmConfig
+        private ILog Log
         {
             get
             {
-                return this.currentLiteOrmConfig;
+                return this.currentLog;
             }
         }
 
-        private ILog Log
+        private IEnumerable<string> Pragmas
         {
-            get { return this.currentLog; }
+            get
+            {
+                return this.currentPragmas;
+            }
+        }
+
+        private IEnumerable<string> Extensions
+        {
+            get
+            {
+                return this.currentExtensions;
+            }
+        }
+
+        private IEnumerable<string> SqlSchema
+        {
+            get
+            {
+                return this.currentSqlSchema;
+            }
+        }
+
+        private string DatabasePath
+        {
+            get
+            {
+                return this.currentDatabasePath;
+            }
+        }
+
+        private string ConnectionString
+        {
+            get
+            {
+                return this.currentConnectionString;
+            }
         }
 
         #endregion
@@ -53,14 +108,13 @@ namespace Illallangi.LiteOrm
             {
                 using (var conn = new SQLiteConnection(this.GetConnectionString())
                     .OpenAndReturn()
-                    .LoadAllExtensions(this.LiteOrmConfig.Extensions)
-                    .SetAllPragmas(this.LiteOrmConfig.Pragmas)
+                    .LoadAllExtensions(this.Extensions)
+                    .SetAllPragmas(this.Pragmas)
                     .WithLogger(this.Log))
                 {
                     foreach (
                         var line in
-                            this.LiteOrmConfig
-                                .SqlSchema
+                            this.SqlSchema
                                 .Select(f => Path.GetFullPath(Environment.ExpandEnvironmentVariables(f)))
                                 .Where(File.Exists)
                                 .SelectMany(file => File.ReadAllText(file).Split(';')))
@@ -72,8 +126,8 @@ namespace Illallangi.LiteOrm
 
             return new SQLiteConnection(this.GetConnectionString())
                 .OpenAndReturn()
-                .LoadAllExtensions(this.LiteOrmConfig.Extensions)
-                .SetAllPragmas(this.LiteOrmConfig.Pragmas)
+                .LoadAllExtensions(this.Extensions)
+                .SetAllPragmas(this.Pragmas)
                 .WithLogger(this.Log);
         }
 
@@ -83,11 +137,11 @@ namespace Illallangi.LiteOrm
 
         private string GetDbPath()
         {
-            var path = Path.GetFullPath(Environment.ExpandEnvironmentVariables(this.LiteOrmConfig.DbPath));
-            Debug.Assert(path != null, "dbPath != null");
+            var path = Path.GetFullPath(Environment.ExpandEnvironmentVariables(this.DatabasePath));
+            Debug.Assert(null != path, "null == Path.GetFullPath(SQLiteConnectionSource.DatabasePath)");
 
             var dir = Path.GetDirectoryName(path);
-            Debug.Assert(dir != null, "dbDirectory != null");
+            Debug.Assert(null != dir, "null == Path.GetDirectoryName(Path.GetFullPath(SQLiteConnectionSource.DatabasePath))");
 
             if (!Directory.Exists(dir))
             {
@@ -99,7 +153,7 @@ namespace Illallangi.LiteOrm
 
         private string GetConnectionString()
         {
-            return string.Format(this.LiteOrmConfig.ConnectionString, this.GetDbPath());
+            return string.Format(this.ConnectionString, this.GetDbPath());
         }
 
         #endregion
