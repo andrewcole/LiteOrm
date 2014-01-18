@@ -32,7 +32,7 @@
     </GitVersion>
 
     <AssemblyInfo CodeLanguage="CS"
-                  OutputFile="$(SourceDir)\Illallangi.LiteOrn\Properties\AssemblyInfo.cs"
+                  OutputFile="$(SourceDir)\Illallangi.LiteOrm\Properties\AssemblyInfo.cs"
                   AssemblyTitle="Lite Orm"
                   AssemblyDescription=""
                   AssemblyCompany="Illallangi Enterprises"
