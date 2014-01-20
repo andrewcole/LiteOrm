@@ -1,17 +1,14 @@
+using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Illallangi.LiteOrm
 {
-    using System;
-
     public static class SQLiteContextBaseExtensions
     {
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        static extern bool SetDllDirectory(string lpPathName);
-
         private const string FileName = @"SQLite.Interop.dll";
 
         // http://stackoverflow.com/questions/13028069/unable-to-load-dll-sqlite-interop-dll
@@ -36,8 +33,12 @@ namespace Illallangi.LiteOrm
             {
                 sx.Log.DebugFormat(@"Found at ""{0}"", calling SetDllDirectory", architecture);
                 SetDllDirectory(Path.Combine(directoryName, (IntPtr.Size == 4) ? "x86" : "x64"));
-                return;
             }
         }
+
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:FieldNamesMustNotUseHungarianNotation", Justification = "Reviewed. Suppression is OK here.")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetDllDirectory(string lpPathName);
     }
 }

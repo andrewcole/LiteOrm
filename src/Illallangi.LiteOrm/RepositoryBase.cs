@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.SQLite;
 using Common.Logging;
     
 namespace Illallangi.LiteOrm
