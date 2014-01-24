@@ -136,7 +136,7 @@ namespace Illallangi.LiteOrm
 
         private static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, string value = null) where T : new()
         {
-            select.Columns.Add(column, string.IsNullOrWhiteSpace(value) ? null : value.Replace('*', '%'));
+            select.Columns.Add(column, string.IsNullOrWhiteSpace(value) ? null : value);
             return select;
         }
 
