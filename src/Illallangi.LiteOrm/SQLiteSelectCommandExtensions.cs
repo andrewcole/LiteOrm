@@ -98,7 +98,14 @@ namespace Illallangi.LiteOrm
                         " AND ",
                         select.Columns
                               .Where(kvp => null != kvp.Value)
-                              .Select(kvp => string.Format("[{0}].[{1}]{2}@{1}", select.Table, kvp.Key, kvp.Value.Contains('%') ? " LIKE " : "="))))
+                              .Select(kvp => string.Format(
+                                  "[{0}].[{1}]{2}@{1}", 
+                                  select.Table, 
+                                  kvp.Key, 
+                                  (kvp.Value.Contains('%') || kvp.Value.Contains('_')) ? " LIKE " : 
+                                    ((kvp.Value.Contains('?') || 
+                                    kvp.Value.Contains('*') || 
+                                    kvp.Value.Contains('[') || kvp.Value.Contains(']')) ? " GLOB " : "=")))))
                 : string.Empty;
         }
 
