@@ -9,15 +9,17 @@ namespace Illallangi.LiteOrm
 
     public static class SQLiteSelectCommandExtensions
     {
+        private static readonly Dictionary<SelectType, string> SelectTypes = 
+            new Dictionary<SelectType, string>
+                        {
+                            { SelectType.Equals, @"=" },
+                            { SelectType.Like, @" LIKE " },
+                            { SelectType.Glob, @" GLOB " },
+                        };
+
         #region Methods
 
         #region Public Methods
-
-        public static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, object value = null) where T : new()
-        {
-            select.Columns.Add(column, null == value ? null : value.ToString());
-            return select;
-        }
 
         public static SQLiteSelectCommand<T> FloatColumn<T>(this SQLiteSelectCommand<T> select, string column, Action<T, float> func, float? value = null) where T : new()
         {
@@ -37,10 +39,10 @@ namespace Illallangi.LiteOrm
             return select.Column(column, value);
         }
 
-        public static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, Action<T, string> func, string value = null) where T : new()
+        public static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, Action<T, string> func, string value = null, SelectType selectType = SelectType.Equals) where T : new()
         {
             select.StringMap.Add(column, func);
-            return select.Column(column, value);
+            return select.Column(column, value, selectType);
         }
         
         public static IEnumerable<T> Go<T>(this SQLiteSelectCommand<T> select) where T : new()
@@ -91,21 +93,18 @@ namespace Illallangi.LiteOrm
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:ParameterMustNotSpanMultipleLines", Justification = "Reviewed. Suppression is OK here.")]
         public static string GetWhereClause<T>(this SQLiteSelectCommand<T> select) where T : new()
         {
-            return select.Columns.Any(kvp => null != kvp.Value)
+            return select.Columns.Any(kvp => null != kvp.Value.Item1)
                 ? string.Concat(
                     " WHERE ",
                     string.Join(
                         " AND ",
                         select.Columns
-                              .Where(kvp => null != kvp.Value)
+                              .Where(kvp => null != kvp.Value.Item1)
                               .Select(kvp => string.Format(
                                   "[{0}].[{1}]{2}@{1}", 
                                   select.Table, 
                                   kvp.Key, 
-                                  (kvp.Value.Contains('%') || kvp.Value.Contains('_')) ? " LIKE " : 
-                                    ((kvp.Value.Contains('?') || 
-                                    kvp.Value.Contains('*') || 
-                                    kvp.Value.Contains('[') || kvp.Value.Contains(']')) ? " GLOB " : "=")))))
+                                  SQLiteSelectCommandExtensions.SelectTypes[kvp.Value.Item2]))))
                 : string.Empty;
         }
 
@@ -122,9 +121,9 @@ namespace Illallangi.LiteOrm
         {
             var cm = select.Connection.CreateCommand();
             cm.CommandText = select.GetSql();
-            foreach (var column in select.Columns.Where(kvp => null != kvp.Value))
+            foreach (var column in select.Columns.Where(kvp => null != kvp.Value.Item1))
             {
-                cm.Parameters.Add(new SQLiteParameter(string.Concat("@", column.Key), column.Value));
+                cm.Parameters.Add(new SQLiteParameter(string.Concat("@", column.Key), column.Value.Item1));
             }
 
             return cm;
@@ -134,9 +133,15 @@ namespace Illallangi.LiteOrm
 
         #region Private Methods
 
-        private static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, string value = null) where T : new()
+        private static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, string value = null, SelectType selectType = SelectType.Equals) where T : new()
         {
-            select.Columns.Add(column, string.IsNullOrWhiteSpace(value) ? null : value);
+            select.Columns.Add(column, new Tuple<string, SelectType>(string.IsNullOrWhiteSpace(value) ? null : value, selectType));
+            return select;
+        }
+
+        private static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, object value = null, SelectType selectType = SelectType.Equals) where T : new()
+        {
+            select.Columns.Add(column, new Tuple<string, SelectType>(null == value ? null : value.ToString(), selectType));
             return select;
         }
 
