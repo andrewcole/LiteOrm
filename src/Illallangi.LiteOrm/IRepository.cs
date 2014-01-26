@@ -4,12 +4,12 @@
 
     public interface IRepository<T> where T : class
     {
-        T Create(T obj);
+        IEnumerable<T> Create(params T[] objs);
 
         IEnumerable<T> Retrieve(T obj = null);
 
         T Update(T obj);
 
-        void Delete(T obj);
+        void Delete(params T[] objs);
     }
 }

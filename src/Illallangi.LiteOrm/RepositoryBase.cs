@@ -30,13 +30,13 @@ namespace Illallangi.LiteOrm
 
         #region Methods
 
-        public abstract T Create(T obj);
+        public abstract IEnumerable<T> Create(params T[] objs);
 
         public abstract IEnumerable<T> Retrieve(T obj = null);
 
         public abstract T Update(T obj);
 
-        public abstract void Delete(T obj);
+        public abstract void Delete(params T[] objs);
 
         #endregion
     }
