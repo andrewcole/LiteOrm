@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace Illallangi.LiteOrm
 {
+    using System.Configuration;
+
     public static class SQLiteInsertCommandExtensions
     {
         public static SQLiteInsertCommand Values(this SQLiteInsertCommand insert, string column, DateTime value)
@@ -47,6 +49,13 @@ namespace Illallangi.LiteOrm
             }
 
             return cm;
+        }
+
+        public static void Go(this SQLiteInsertCommand insert, SQLiteTransaction tx)
+        {
+            var cm = insert.CreateCommand();
+            cm.Transaction = tx;
+            cm.ExecuteNonQuery();
         }
 
         public static int Go(this SQLiteInsertCommand insert)
