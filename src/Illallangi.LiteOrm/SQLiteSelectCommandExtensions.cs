@@ -9,14 +9,6 @@ namespace Illallangi.LiteOrm
 
     public static class SQLiteSelectCommandExtensions
     {
-        private static readonly Dictionary<SelectType, string> SelectTypes = 
-            new Dictionary<SelectType, string>
-                        {
-                            { SelectType.Equals, @"=" },
-                            { SelectType.Like, @" LIKE " },
-                            { SelectType.Glob, @" GLOB " },
-                        };
-
         #region Methods
 
         #region Public Methods
@@ -39,7 +31,7 @@ namespace Illallangi.LiteOrm
             return select.Column(column, value);
         }
 
-        public static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, Action<T, string> func, string value = null, SelectType selectType = SelectType.Equals) where T : new()
+        public static SQLiteSelectCommand<T> Column<T>(this SQLiteSelectCommand<T> select, string column, Action<T, string> func, string value = null, SelectType selectType = SelectType.Automatic) where T : new()
         {
             select.StringMap.Add(column, func);
             return select.Column(column, value, selectType);
@@ -104,8 +96,41 @@ namespace Illallangi.LiteOrm
                                   "[{0}].[{1}]{2}@{1}", 
                                   select.Table, 
                                   kvp.Key, 
-                                  SQLiteSelectCommandExtensions.SelectTypes[kvp.Value.Item2]))))
+                                  SQLiteSelectCommandExtensions.GetSelectType<T>(kvp)))))
                 : string.Empty;
+        }
+
+        private static string GetSelectType<T>(KeyValuePair<string, Tuple<string, SelectType>> kvp) where T : new()
+        {
+            switch (kvp.Value.Item2)
+            {
+                case SelectType.Automatic:
+                    if (kvp.Value.Item1.Contains(@"*")
+                        || kvp.Value.Item1.Contains(@"?"))
+                    {
+                        return @" GLOB ";
+                    }
+
+                    if (kvp.Value.Item1.Contains(@"%")
+                        || kvp.Value.Item1.Contains(@"_"))
+                    {
+                        return @" LIKE ";
+                    }
+
+                    return @"=";
+
+                case SelectType.Equals:
+                    return @"=";
+
+                case SelectType.Glob:
+                    return @" GLOB ";
+
+                case SelectType.Like:
+                    return @" LIKE ";
+
+                default:
+                    throw new NotImplementedException(kvp.Value.Item2.ToString());
+            }
         }
 
         public static string GetSql<T>(this SQLiteSelectCommand<T> select) where T : new()

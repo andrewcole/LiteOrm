@@ -2,8 +2,9 @@
 {
     public enum SelectType
     {
-        Equals = 0,
-        Like = 1,
-        Glob = 2,
+        Automatic = 0,
+        Equals = 1,
+        Like = 2,
+        Glob = 3,
     }
 }
