@@ -30,6 +30,8 @@ namespace Illallangi.LiteOrm
 
         #region Methods
 
+        public abstract void Import(params T[] objs);
+
         public abstract IEnumerable<T> Create(params T[] objs);
 
         public abstract IEnumerable<T> Retrieve(T obj = null);
