@@ -68,9 +68,10 @@ namespace Illallangi.LiteOrm
 
                         foreach (var kvm in select.DateMap)
                         {
-                            if (null != reader.GetValue(reader.GetOrdinal(kvm.Key)))
+                            var ordinal = reader.GetOrdinal(kvm.Key);
+                            if (!reader.IsDBNull(ordinal))
                             {
-                                kvm.Value(result, reader.GetDateTime(reader.GetOrdinal(kvm.Key)));
+                                kvm.Value(result, reader.GetDateTime(ordinal));
                             }
                         }
 
