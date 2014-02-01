@@ -4,7 +4,7 @@
 
     public interface IRepository<T> where T : class
     {
-        void Import(params T[] objs);
+        int Import(params T[] objs);
 
         IEnumerable<T> Create(params T[] objs);
 
