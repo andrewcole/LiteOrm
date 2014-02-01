@@ -14,7 +14,6 @@ namespace Illallangi.LiteOrm
             return delete;
         }
 
-        
         public static SQLiteDeleteCommand Where(this SQLiteDeleteCommand delete, string column, object value = null)
         {
             delete.Columns.Add(column, value);
