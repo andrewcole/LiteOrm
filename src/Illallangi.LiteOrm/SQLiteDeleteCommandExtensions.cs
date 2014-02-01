@@ -3,10 +3,18 @@ using System.Linq;
 
 namespace Illallangi.LiteOrm
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
 
     public static class SQLiteDeleteCommandExtensions
     {
+        public static SQLiteDeleteCommand Where(this SQLiteDeleteCommand delete, string column, DateTime value)
+        {
+            delete.Columns.Add(column, value.ToString("yyyy-MM-ddTHH:mm:ss"));
+            return delete;
+        }
+
+        
         public static SQLiteDeleteCommand Where(this SQLiteDeleteCommand delete, string column, object value = null)
         {
             delete.Columns.Add(column, value);
